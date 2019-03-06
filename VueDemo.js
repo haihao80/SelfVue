@@ -27,7 +27,6 @@ Vue.prototype = {
         return this.data[key];
       },
       set: function(val) {
-        console.log(this);
         this.data[key] = val;
       }
     })

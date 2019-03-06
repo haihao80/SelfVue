@@ -33,7 +33,6 @@ Observer.prototype = {
       configurable: false,
       enumerable: false
     })
-    console.log(`监听上了${key}`)
   }
 }
 

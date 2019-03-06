@@ -21,20 +21,19 @@ Compile.prototype = {
   node2Fragment: function() {
     let fragment = document.createDocumentFragment();
     let child = this.el.firstChild;
-    if(child) {
+    while(child) {
       fragment.appendChild(child);
+      child = this.el.firstChild;
     }
     return fragment;
   },
   //
   compileElement: function(el) {
     let childNodes = el.childNodes;
-    print(el)
     let self = this;
     [].slice.call(childNodes).forEach(function(node){
       var reg = /\{\{(.*?)\}\}/;//匹配" {{}} "
       var text = node.textContent;
-      print(node)
       if(self.isElementNode(node)) {
         self.compile(node);
       }
@@ -74,15 +73,16 @@ Compile.prototype = {
   },
   //编译元素结点
   compile: function(node) {
-    let attrs = node.attrs;
+    let attrs = node.attributes;
     let self = this;
+    if(attrs == undefined) return;
     [].slice.call(attrs).forEach(function(attr) {
       let exp = attr.value;
-      let attrName = attr.attrName;
-      console.log(attrName)
+      let attrName = attr.name;
+      console.log(attrName, exp)
       if(self.isDirective(attrName)) {
         console.log('directive')
-        let attrNameSub = attrName.subString(2);
+        let attrNameSub = attrName.substring(2);
         if(self.isEventDirective(attrNameSub)) {
           console.log(`编译事件${exp}`)
           self.compileEvent(node, self.vm, exp, attrNameSub);
@@ -91,7 +91,7 @@ Compile.prototype = {
           console.log(`编译Model${exp}`)
           self.compileModel(node, self.vm, exp);
         }
-        node.removeAttr(attrName);
+        node.removeAttribute(attrName);
       }
     })
   },
@@ -110,11 +110,11 @@ Compile.prototype = {
   },
   //是否为v-开头的属性
   isDirective: function(attrName) {
-    return attrName.indexof('v-model') == 0;
+    return attrName.indexOf('v-') == 0;
   },
   //on:开头的属性
   isEventDirective:function(attrName) {
-    return attrName.indexof('on:') == 0;
+    return attrName.indexOf('on:') == 0;
   },
   //是否为元素结点
   isElementNode: function(node) {
